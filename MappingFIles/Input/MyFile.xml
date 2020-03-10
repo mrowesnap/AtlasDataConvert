@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<DatabaseTableModel xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.cpandl.com">
+  <SourceConnectionString>Data Source=RPGMOBILE5\SQLEXPRESS;Initial Catalog=ResultsPlusData;User ID=sa; Password=@v3ryN0r@;</SourceConnectionString>
+  <SourceDatabaseType>SQLServer</SourceDatabaseType>
+  <SourceName>FolderBase</SourceName>
+  <DestinationConnectionString>C:\Development\ProjectAtlas\DataConversion\AtlasDataConvert\MappingFIles\myfleConverted.csv</DestinationConnectionString>
+  <DestinationDatabaseType>CSV</DestinationDatabaseType>
+  <DestinationName>MyFileConverted</DestinationName>
+  <Fields>
+    <DatabaseField>
+      <SourceName>FirstName</SourceName>
+      <DestinationName>FirstName</DestinationName>
+      <FieldDataType>Text</FieldDataType>
+      <DataLength>10</DataLength>
+    </DatabaseField>
+    <DatabaseField>
+      <SourceName>LastName</SourceName>
+      <FieldDataType>Text</FieldDataType>
+      <DestinationName>LastName</DestinationName>
+    </DatabaseField>   
+<DatabaseField>
+      <SourceName>LastGiftAmt</SourceName>
+      <FieldDataType>Number</FieldDataType>
+      <DestinationName>LastGiftAmount</DestinationName>
+    </DatabaseField>   
+  </Fields>
+</DatabaseTableModel>

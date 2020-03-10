@@ -4,14 +4,15 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{B12BCD64-9FCB-4A3F-A94A-51A2C92F54BF}</ProjectGuid>
+    <ProjectGuid>{5079DB41-E807-4AA1-88F4-C68A17766E0F}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>AtlasDataConvert</RootNamespace>
-    <AssemblyName>AtlasDataConvert</AssemblyName>
-    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
+    <RootNamespace>FoxProFieldCountList</RootNamespace>
+    <AssemblyName>FoxProFieldCountList</AssemblyName>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -33,9 +34,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="GenericParsing, Version=1.1.6.22888, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\GenericParser.1.1.6\lib\net20\GenericParsing.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -46,32 +44,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Enumerations\DatabaseType.cs" />
-    <Compile Include="Enumerations\DataType.cs" />
-    <Compile Include="Enumerations\CommandType.cs" />
-    <Compile Include="Extensions\DataReaderExtensions.cs" />
-    <Compile Include="Models\DatabaseField.cs" />
-    <Compile Include="Models\DatabaseTableModel.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Services\LogService.cs" />
-    <Compile Include="Services\ProcessDataConversion.cs" />
-    <Compile Include="Services\ProcessDataFilesService.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <COMReference Include="VFPOLEDBLib">
-      <Guid>{50BAEECA-ED25-11D2-B97B-000000000000}</Guid>
-      <VersionMajor>1</VersionMajor>
-      <VersionMinor>0</VersionMinor>
-      <Lcid>0</Lcid>
-      <WrapperTool>tlbimp</WrapperTool>
-      <Isolated>False</Isolated>
-      <EmbedInteropTypes>True</EmbedInteropTypes>
-    </COMReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

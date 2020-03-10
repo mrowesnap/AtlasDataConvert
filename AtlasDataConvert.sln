@@ -5,6 +5,10 @@ VisualStudioVersion = 15.0.28307.852
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AtlasDataConvert", "AtlasDataConvert\AtlasDataConvert.csproj", "{B12BCD64-9FCB-4A3F-A94A-51A2C92F54BF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AtlasDataConvertTests", "AtlasDataConvertTests\AtlasDataConvertTests.csproj", "{B3F198D0-9E0E-4639-8679-F52518BE32DC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FoxProFieldCountList", "FoxProFieldCountList\FoxProFieldCountList.csproj", "{5079DB41-E807-4AA1-88F4-C68A17766E0F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +19,14 @@ Global
 		{B12BCD64-9FCB-4A3F-A94A-51A2C92F54BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B12BCD64-9FCB-4A3F-A94A-51A2C92F54BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B12BCD64-9FCB-4A3F-A94A-51A2C92F54BF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B3F198D0-9E0E-4639-8679-F52518BE32DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B3F198D0-9E0E-4639-8679-F52518BE32DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B3F198D0-9E0E-4639-8679-F52518BE32DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B3F198D0-9E0E-4639-8679-F52518BE32DC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5079DB41-E807-4AA1-88F4-C68A17766E0F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5079DB41-E807-4AA1-88F4-C68A17766E0F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5079DB41-E807-4AA1-88F4-C68A17766E0F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5079DB41-E807-4AA1-88F4-C68A17766E0F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
