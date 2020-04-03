@@ -13,6 +13,7 @@ namespace AtlasDataConvert.Models
         public string DestinationName { get; set; }
         public DataType FieldDataType { get; set; }
         public string DataLength { get; set; }
+        public bool IsRequired { get; set; }
         
     }
 }

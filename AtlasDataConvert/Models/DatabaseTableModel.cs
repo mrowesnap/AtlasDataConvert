@@ -22,6 +22,5 @@ namespace AtlasDataConvert.Models
 
         [XmlArrayAttribute("Fields")]
         public List<DatabaseField> Fields { get; set; }
-        
-    }
+    }       
 }

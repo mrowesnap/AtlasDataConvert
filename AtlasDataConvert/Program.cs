@@ -14,6 +14,11 @@ namespace AtlasDataConvert
         static void Main(string[] args)
         {
 
+            // ProcessDataConversion.ProcessActivityAllocation("");
+            ProcessDataConversion.ProcessPODetail("");
+
+            ProcessDataConversion.ProcessXml(@"C:\Development\ProjectAtlas\DataConversion\CapsysTemplates\tc_ActivityAllocation.xml");
+
             foreach (string fileName in Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory + @"\Input"))
             {
                 Console.WriteLine("Processing::{0}", fileName);

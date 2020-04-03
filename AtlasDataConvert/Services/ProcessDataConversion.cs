@@ -101,6 +101,10 @@ namespace AtlasDataConvert.Services
             string validationMessage = string.Empty;
             int counter = 1;
             int lineNumber = 0;
+            string finalDataValue = string.Empty;
+            string sourceField = string.Empty;
+            List<string> sourceFields = null;
+            int subFieldCount = 0;
             foreach (DatabaseField field in mappingTable.Fields)
             {
                 outputCsv.Append(field.DestinationName);
@@ -116,17 +120,45 @@ namespace AtlasDataConvert.Services
             {
                 lineNumber++;
                 int dataLength = 0;
+
                 counter = 1;
                 foreach (DatabaseField field in mappingTable.Fields)
                 {
                     dataValue = string.Empty;
-                    dataValue = GetDataTableValue(field.SourceName, row).ToString();
-                    dataValue = FormatDataValue(dataValue, field.FieldDataType, field.DataLength, out validationMessage);
+                    sourceField = field.SourceName;
+                    sourceFields = new List<string>();
+                    if (sourceField.Contains(";"))
+                    {
+                        foreach (string f in sourceField.Split(';'))
+                        {
+                            sourceFields.Add(f);
+                        }
+                    }
+                    else
+                    {
+                        sourceFields = new List<string>();
+                        sourceFields.Add(sourceField);
+                    }
+                    finalDataValue = string.Empty;
+                    subFieldCount = 0;
+                    foreach (string fieldName in sourceFields)
+                    {
+                        dataValue = GetDataTableValue(fieldName, row).ToString();
+                        dataValue = FormatDataValue(dataValue, field.FieldDataType, field.DataLength,false, out validationMessage);
+                        if (subFieldCount > 0)
+                        {
+                            finalDataValue += ";";
+                        }
+                        subFieldCount++;
+                        finalDataValue += dataValue;
+                    }
+                    finalDataValue = FormatDataValue(finalDataValue, field.FieldDataType, field.DataLength,true, out validationMessage);
+
                     if (!string.IsNullOrEmpty(validationMessage))
                     {
                         LogService.LogMessage(string.Format("{0}, Line::{1} of {2} - Column {3}", validationMessage, lineNumber.ToString(), mappingTable.SourceName, field.SourceName));
                     }
-                    outputCsv.Append(dataValue);
+                    outputCsv.Append(finalDataValue);
                     if (counter < mappingTable.Fields.Count)
                     {
                         counter++;
@@ -145,7 +177,7 @@ namespace AtlasDataConvert.Services
             File.AppendAllText(mappingTable.DestinationConnectionString, outputCsv.ToString());
         }
 
-        private static string FormatDataValue(string input, DataType fieldType, string length, out string validationMessage)
+        private static string FormatDataValue(string input, DataType fieldType, string length, bool formatString, out string validationMessage)
         {
             string dataValue = string.Empty;
             int dataLength = 0;
@@ -163,7 +195,17 @@ namespace AtlasDataConvert.Services
                             validationMessage = "String Truncated";
                         }
                     }
-                    dataValue = string.Format("\"{0}\"", input);
+                    if (formatString)
+                    {
+                        dataValue = string.Format("\"{0}\"", input.Replace("NULL","").Replace("\"",""));
+                    }
+                    else
+                    {
+                        dataValue = input.Replace("NULL", "").Replace("\"", "");
+                    }
+                    break;
+                case DataType.Phone:
+                    dataValue = GetAllDigits(input);
                     break;
                 case DataType.Boolean:
                     if (!string.IsNullOrEmpty(input))
@@ -179,6 +221,10 @@ namespace AtlasDataConvert.Services
                             dataValue = "0";
                         }
                     }
+                    break;
+                case DataType.Date:
+                    DateTime dt = Convert.ToDateTime(dataValue);
+                    dataValue = dt.ToString("yyyy-MM-dd");
                     break;
                 default:
                     dataValue = input;
@@ -197,6 +243,12 @@ namespace AtlasDataConvert.Services
             StringBuilder outputCsv = new StringBuilder();
             string dataValue = string.Empty;
             string validationMessage = string.Empty;
+
+            string finalDataValue = string.Empty;
+            string sourceField = string.Empty;
+            List<string> sourceFields = null;
+            int subFieldCount = 0;
+
 
             int counter = 1;
             int lineNumber = 0;
@@ -218,13 +270,41 @@ namespace AtlasDataConvert.Services
                 foreach (DatabaseField field in mappingTable.Fields)
                 {
                     dataValue = string.Empty;
-                    dataValue = GetDataReaderValue(field.SourceName, reader).ToString();
-                    dataValue = FormatDataValue(dataValue, field.FieldDataType, field.DataLength, out validationMessage);
+                    sourceField = field.SourceName;
+                    sourceFields = new List<string>();
+                    if (sourceField.Contains(";"))
+                    {
+                        foreach (string f in sourceField.Split(';'))
+                        {
+                            sourceFields.Add(f);
+                        }
+                    }
+                    else
+                    {
+                        sourceFields = new List<string>();
+                        sourceFields.Add(sourceField);
+                    }
+                    finalDataValue = string.Empty;
+                    subFieldCount = 0;
+                    foreach (string fieldName in sourceFields)
+                    {
+                        dataValue = GetDataReaderValue(fieldName, reader).ToString();
+                        dataValue = FormatDataValue(dataValue, field.FieldDataType, field.DataLength, false, out validationMessage);
+                        if (subFieldCount > 0)
+                        {
+                            finalDataValue += "_";
+                            
+                        }
+                        subFieldCount++;
+                        finalDataValue += dataValue;
+                    }
+                    finalDataValue = FormatDataValue(finalDataValue, field.FieldDataType, field.DataLength, true, out validationMessage);
+
                     if (!string.IsNullOrEmpty(validationMessage))
                     {
                         LogService.LogMessage(string.Format("{0}, Line::{1} of {2} - Column {3}", validationMessage, lineNumber.ToString(), mappingTable.SourceName, field.SourceName));
                     }
-                    outputCsv.Append(dataValue);
+                    outputCsv.Append(finalDataValue);
                     if (counter < mappingTable.Fields.Count)
                     {
                         counter++;
@@ -246,9 +326,15 @@ namespace AtlasDataConvert.Services
         public static object GetDataReaderValue(string fieldName, IDataReader dr)
         {
             object val = null;
+            int ordinal = 0;
             if (dr.HasColumn(fieldName))
             {
-                val = dr.GetValue(dr.GetOrdinal(fieldName));
+                ordinal = dr.GetOrdinal(fieldName);
+                try
+                {
+                    val = dr.GetValue(ordinal);
+                }
+                catch (System.InvalidOperationException ex) { }
                 if (val != null && val != DBNull.Value)
                 {
                     return val;
@@ -336,5 +422,92 @@ namespace AtlasDataConvert.Services
                 }
             }       
         }
+        public static void ProcessActivityAllocation(string tableNameString)
+        {
+            StringBuilder commandText = new StringBuilder();
+            StringBuilder outputTextFile = new StringBuilder();
+            commandText.Append("SELECT * FROM act WHERE (ATYP <> '' OR ATYP <> 'X') and NOT AGENCALC");
+            Console.WriteLine(commandText.ToString());
+            outputTextFile.Append("Group__c, Name, General_Accounting_Unit__c, Allocation_Percent__c");
+            outputTextFile.Append(Environment.NewLine);
+            using (OleDbConnection cn = new OleDbConnection(@"Provider=vfpoledb;Data Source=C:\Development\ProjectAtlas\DataConversion\Timecard files\act.dbf;Collating Sequence=machine;"))
+            {
+                cn.Open();
+                using (OleDbCommand cmd = cn.CreateCommand())
+                {
+                    cmd.CommandText = commandText.ToString();
+                    using (IDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            for (int i = 1; i <= 16; i++)
+                            {
+                                if (!string.IsNullOrEmpty(GetDataReaderValue("aacc" + i.ToString(), reader).ToString().Trim()))
+                                {
+                                    outputTextFile.Append(GetDataReaderValue("agrp", reader).ToString().Trim());
+                                    outputTextFile.Append(",\"");
+                                    outputTextFile.Append(GetDataReaderValue("aact", reader).ToString().Trim());
+                                    outputTextFile.Append("\",\"");
+                                    outputTextFile.Append(GetDataReaderValue("aacc" + i.ToString(), reader).ToString().Trim()+"6000");
+                                    outputTextFile.Append("\",");
+                                    outputTextFile.Append(GetDataReaderValue("apc" + i.ToString(), reader).ToString().Trim());
+                                    outputTextFile.Append(Environment.NewLine);
+                                }                                
+                            }
+                        }
+                    }
+                    File.AppendAllText(@"C:\Development\ProjectAtlas\DataConversion\Timecard files\tc_activity_allocation.csv", outputTextFile.ToString());
+                }
+            }
+        }
+
+        public static void ProcessPODetail(string tableNameString)
+        {
+            StringBuilder commandText = new StringBuilder();
+            StringBuilder outputTextFile = new StringBuilder();
+            commandText.Append("SELECT * FROM pod");
+            Console.WriteLine(commandText.ToString());
+            outputTextFile.Append("Account__c, Amount__c, Description__c, General_Accounting_Unit__c,Open_Date__c,PO_Line_Number__c,Purchase_Order__c");
+            outputTextFile.Append(Environment.NewLine);
+            int k = 0;
+            using (OleDbConnection cn = new OleDbConnection(@"Provider=vfpoledb;Data Source=C:\Development\ProjectAtlas\DataConversion\POFiles\pod.dbf;Collating Sequence=machine;"))
+            {
+                cn.Open();
+                using (OleDbCommand cmd = cn.CreateCommand())
+                {
+                    cmd.CommandText = commandText.ToString();
+                    using (IDataReader reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            Console.WriteLine("Processing Line::" + k.ToString());
+                            k++;
+                            for (int i = 1; i <= 6; i++)
+                            {
+                                if (!string.IsNullOrEmpty(GetDataReaderValue("PACC" + i.ToString(), reader).ToString().Trim()))
+                                {
+                                    outputTextFile.Append(GetDataReaderValue("PACC" + i.ToString(), reader).ToString().Trim());
+                                    outputTextFile.Append(",");
+                                    outputTextFile.Append(GetDataReaderValue("PAMT" + i.ToString(), reader).ToString().Trim());
+                                    outputTextFile.Append(",\"");
+                                    outputTextFile.Append(GetDataReaderValue("PDESC", reader).ToString().Trim());
+                                    outputTextFile.Append("\",");
+                                    outputTextFile.Append(GetDataReaderValue("PACC" + i.ToString(), reader).ToString().Trim());
+                                    outputTextFile.Append(",");
+                                    outputTextFile.Append(Convert.ToDateTime(GetDataReaderValue("PDATORD", reader)).ToString("yyyy-MM-dd"));
+                                    outputTextFile.Append(",");
+                                    outputTextFile.Append(i.ToString());
+                                    outputTextFile.Append(",");
+                                    outputTextFile.Append(GetDataReaderValue("PNUM", reader).ToString());
+                                    outputTextFile.Append(Environment.NewLine);
+                                }
+                            }
+                        }
+                    }
+                    File.AppendAllText(@"C:\Development\ProjectAtlas\DataConversion\POFiles\purchase_order_line.csv", outputTextFile.ToString());
+                }
+            }
+        }
+
     }
 }
