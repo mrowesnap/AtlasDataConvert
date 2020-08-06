@@ -429,7 +429,7 @@ namespace AtlasDataConvert.Services
         {
             StringBuilder commandText = new StringBuilder();
             StringBuilder outputTextFile = new StringBuilder();
-            commandText.Append("SELECT * FROM act WHERE (ATYP <> '' OR ATYP <> 'X') and NOT AGENCALC");
+            commandText.Append("SELECT * FROM act WHERE (ATYP <> '' OR ATYP <> 'X') and AGENCALC > 0");
             Console.WriteLine(commandText.ToString());
             outputTextFile.Append("Group__c, Name, General_Accounting_Unit__c, Allocation_Percent__c");
             outputTextFile.Append(Environment.NewLine);
@@ -445,7 +445,12 @@ namespace AtlasDataConvert.Services
                         {
                             for (int i = 1; i <= 16; i++)
                             {
-                                if (!string.IsNullOrEmpty(GetDataReaderValue("aacc" + i.ToString(), reader).ToString().Trim()))
+                                if (!string.IsNullOrEmpty(GetDataReaderValue("aacc" + i.ToString(), reader).ToString().Trim())
+                                    && (
+                                        !string.IsNullOrEmpty(GetDataReaderValue("apc" + i.ToString(), reader).ToString().Trim()) 
+                                        && Convert.ToDecimal(GetDataReaderValue("apc" + i.ToString(), reader).ToString().Trim()) > 0
+                                       )
+                                   )
                                 {
                                     outputTextFile.Append(GetDataReaderValue("agrp", reader).ToString().Trim());
                                     outputTextFile.Append(",\"");
@@ -914,7 +919,7 @@ namespace AtlasDataConvert.Services
         {
             StringBuilder commandText = new StringBuilder();
             StringBuilder outputTextFile = new StringBuilder();
-            commandText.Append("SELECT * FROM dtl");
+            commandText.Append("SELECT * FROM dtl WHERE (not dCTR is null and not dssn1 is null and len(rtrim(ltrim(dssn1)))>0 and len(rtrim(ltrim(dctr)))>0) and lower(dCTR) <> 'a' and datediff(day, DDATOPEN, '1/1/2013')<=0");
             Console.WriteLine(commandText.ToString());
             DateTime dateCompleted;
             DateTime dateOpen;
@@ -950,14 +955,14 @@ namespace AtlasDataConvert.Services
                             }
                             decimal.TryParse(GetDataReaderValue("dhrs", reader).ToString(), out hours);
 
-                            if ((GetDataReaderValue("dsrv", reader).ToString().Trim().ToUpper() == "HOME") && (dateCompleted.Year >= DateTime.Now.Year - 10 || dateOpen.Year >= DateTime.Now.Year))
+                            if ((GetDataReaderValue("dsrv", reader).ToString().Trim().ToUpper() == "HOME"))
                             {
                                 Console.WriteLine("Processing Line::" + k.ToString());
                                 k++;
 
                                 outputTextFile.Append("HOM" + GetDataReaderValue("DIDNUM", reader).ToString().Trim());
                                 outputTextFile.Append(",");
-                                outputTextFile.Append("HLENR" + GetDataReaderValue("DIDNUM", reader).ToString().Trim());
+                                outputTextFile.Append(GetDataReaderValue("DIDNUM", reader).ToString().Trim());
                                 outputTextFile.Append(",");
                                 if (dateCompleted != DateTime.MinValue)
                                 {

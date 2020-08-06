@@ -16,17 +16,17 @@ namespace AtlasDataConvert
         static void Main(string[] args)
         {
             List<Thread> processData = new List<Thread>();
-            processData.Add(new Thread(ProcessDataConversion.ProcessUser));
-            processData.Add(new Thread(ProcessDataConversion.ProcessService));
-            processData.Add(new Thread(ProcessDataConversion.ProcessTimesheetGroupMember));
-            processData.Add(new Thread(ProcessDataConversion.ProcessPODetail));
-            processData.Add(new Thread(ProcessDataConversion.ProcessProjectAccount));
+            //processData.Add(new Thread(ProcessDataConversion.ProcessUser));
+            //processData.Add(new Thread(ProcessDataConversion.ProcessService));
+            //processData.Add(new Thread(ProcessDataConversion.ProcessTimesheetGroupMember));
+            //processData.Add(new Thread(ProcessDataConversion.ProcessPODetail));
+            //processData.Add(new Thread(ProcessDataConversion.ProcessProjectAccount));
 
             foreach (string directoryName in Directory.GetDirectories(ConfigurationManager.AppSettings["crystalReportsPath"]))
             {
                 foreach (string reportName in Directory.GetFiles(directoryName))
                 {
-                    processData.Add(new Thread(() => ProcessDataConversion.ProcessCrystalReport(reportName)));
+                  //  processData.Add(new Thread(() => ProcessDataConversion.ProcessCrystalReport(reportName)));
                 }
 
             }
@@ -35,13 +35,13 @@ namespace AtlasDataConvert
                 t.Start();
             }
 
-            // ProcessDataConversion.ProcessActivityAllocation("");
+            ProcessDataConversion.ProcessActivityAllocation();
             //ProcessDataConversion.ProcessUser("");
             //ProcessDataConversion.ProcessRent("");
-            //ProcessDataConversion.ProcessService("");
+            ProcessDataConversion.ProcessService();
             //  ProcessDataConversion.ProcessProjectAccount();
             //Console.WriteLine("Complete");
-            //Console.ReadKey();
+            Console.ReadKey();
         }
 
     }
